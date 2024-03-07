@@ -1,0 +1,6 @@
+/.idea
+/docker
+makefile
+
+/vendor
+composer.lock
