@@ -17,11 +17,9 @@ return [
         ],
     ],
     'formdata' => [
-//         'email' => 'test@example.com',
-//         'password' => 'password',
+        'email' => 'test@example.com',
+        'password' => 'password',
     ],
     'include_middleware' => ['api'],
-    'folders' => [
-
-    ]
+    'folders' => []
 ];

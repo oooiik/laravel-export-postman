@@ -67,6 +67,9 @@ class RouteConvert
             $this->requests[$methodType]['name'] = $this->route->uri();
             $this->requests[$methodType]['request']['method'] = strtoupper($methodType);
             $this->requests[$methodType]['request']['header'] = $this->helper->headers();
+            $this->requests[$methodType]['protocolProfileBehavior'] = [
+                'disableBodyPruning' => true
+            ];
 
             $uri = Str::of($this->route->uri())->replaceMatches('/{([[:alnum:]]+)([?}]+)/', ':$1');
             $variables = $uri->matchAll('/(?<={)[[:alnum:]]+(?=})/m');
