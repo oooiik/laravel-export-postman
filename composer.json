@@ -8,7 +8,7 @@
             "email": "info@oooiik.com"
         }
     ],
-    "version": "0.1.0",
+    "minimum-stability": "stable",
     "license": "MIT",
     "require": {
         "php": "^7.1|^8.0",
