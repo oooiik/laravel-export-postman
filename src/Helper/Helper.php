@@ -4,7 +4,6 @@ namespace Oooiik\LaravelExportPostman\Helper;
 
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Config\Repository;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Helper implements HelperInterface
@@ -55,14 +54,17 @@ class Helper implements HelperInterface
         return $this->config->get('export-postman.formdata');
     }
 
+    public function disk(): string
+    {
+        return $this->config->get('export-postman.disk');
+    }
+
     public function path(): string
     {
-        $path = str_replace(
+        return str_replace(
             ['{app}', '{timestamp}'],
             [Str::snake($this->config->get('app.name')), date('Y-m-d_H-i-s')],
             $this->config->get('export-postman.path')
         );
-        return Storage::disk($this->config->get('export-postman.disk'))
-            ->path($path);
     }
 }

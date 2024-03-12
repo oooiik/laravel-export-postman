@@ -26,5 +26,8 @@ interface HelperInterface
     public function formData(): array;
 
     /** @return string */
+    public function disk(): string;
+
+    /** @return string */
     public function path(): string;
 }

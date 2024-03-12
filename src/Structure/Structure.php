@@ -4,6 +4,7 @@ namespace Oooiik\LaravelExportPostman\Structure;
 
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Facades\Storage;
 use Oooiik\LaravelExportPostman\Helper\HelperInterface;
 
 class Structure
@@ -143,7 +144,7 @@ class Structure
      */
     public function storeFile(): bool
     {
-        return file_put_contents($this->helper->path(), json_encode($this->collection)) !== false;
+        return Storage::disk($this->helper->disk())->put($this->helper->path(), json_encode($this->collection));
     }
 
 }
