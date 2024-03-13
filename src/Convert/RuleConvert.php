@@ -12,9 +12,14 @@ class RuleConvert
 
     protected $convert;
 
-    protected $fieldName;
+    protected $fieldOriginal;
+    protected $field;
 
+    /** @var array */
     protected $rules = [];
+
+    /** @var mixed */
+    protected $value;
 
     protected function __construct()
     {
@@ -27,7 +32,12 @@ class RuleConvert
      */
     public function setField(string $fieldName)
     {
-        $this->fieldName = $fieldName;
+        $this->fieldOriginal = $fieldName;
+        $this->field = str_replace(
+            [".*.", ".*"],
+            ["[]", "[]"],
+            $this->fieldOriginal
+        );
     }
 
     /**
@@ -55,12 +65,32 @@ class RuleConvert
 
     }
 
+    protected function setValue()
+    {
+        if (in_array('integer', $this->rules)) {
+            $this->value = 1;
+        } elseif (in_array('string', $this->rules)) {
+            $this->value = "string";
+        } elseif (in_array("numeric", $this->rules)) {
+            $this->value = 1.23;
+        } elseif (in_array("boolean", $this->rules)) {
+            $this->value = true;
+        } elseif (in_array("email", $this->rules)) {
+            $this->value = "user@example.com";
+        } elseif (in_array("array", $this->rules)) {
+            $this->value = [];
+        } elseif (in_array("nullable", $this->rules)) {
+            $this->value = null;
+        }
+    }
+
 
     public static function parse($fieldName, $rules): self
     {
         $new = new self();
         $new->setField($fieldName);
         $new->setRules($rules);
+        $new->setValue();
         $new->convert();
         return $new;
     }
@@ -69,8 +99,8 @@ class RuleConvert
     protected function convert()
     {
         $this->convert = [
-            'key' => $this->fieldName,
-            'value' => $this->helper->formData()[$this->fieldName] ?? null,
+            'key' => $this->field,
+            'value' => $this->helper->formData()[$this->fieldOriginal] ?? $this->value,
             'type' => 'text',
         ];
         $this->convertDescription();
