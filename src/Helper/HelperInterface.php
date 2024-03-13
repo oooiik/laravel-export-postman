@@ -14,6 +14,12 @@ interface HelperInterface
     public function headers(): array;
 
     /** @return string */
+    public function contentType(): string;
+
+    /** @return string */
+    public function contentTypePostman(): string;
+
+    /** @return string */
     public function baseUrl(): string;
 
     /** @return string */
@@ -23,7 +29,7 @@ interface HelperInterface
     public function folders(): array;
 
     /** @return array */
-    public function formData(): array;
+    public function paramsValue(): array;
 
     /** @return string */
     public function disk(): string;

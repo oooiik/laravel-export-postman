@@ -13,17 +13,12 @@ return [
     'collection_name' => '{app}',
     // headers for every request
     'headers' => [
-        [
-            'key' => 'Accept',
-            'value' => 'application/json',
-        ],
-        [
-            'key' => 'Content-Type',
-            'value' => 'application/json',
-        ],
+        // 'key' => 'value',
     ],
+    // or params type form "form-data", "x-www-form-urlencoded", "json"
+    'content_type' => 'form-data',
     // value for this parameter name
-    'formdata' => [
+    'params_value' => [
         'email' => 'test@example.com',
         'password' => 'password',
     ],

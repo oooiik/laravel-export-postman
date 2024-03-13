@@ -31,7 +31,46 @@ class Helper implements HelperInterface
 
     public function headers(): array
     {
-        return $this->config->get('export-postman.headers');
+        $headers = $this->config->get('export-postman.headers') ?? [];
+        if (!array_key_exists('Accept', $headers)) {
+            $headers['Accept'] = "application/json";
+        }
+        switch ($this->contentType()) {
+            case "form-data":
+                $headers['Content-Type'] = "multipart/form-data";
+                break;
+            case "x-www-form-urlencoded":
+                $headers['Content-Type'] = "application/x-www-form-urlencoded";
+                break;
+            case "json":
+            default :
+            $headers['Content-Type'] = "application/json";
+        }
+
+        return array_map(function ($key) use ($headers) {
+            return [
+                'key' => $key,
+                'value' => $headers[$key]
+            ];
+        }, array_keys($headers));
+    }
+
+    public function contentType(): string
+    {
+        $contentType = $this->config->get('export-postman.content_type');
+        if (!in_array($contentType, ["form-data", "x-www-form-urlencoded", "json"])){
+            $contentType = "form-data";
+        }
+        return $contentType;
+    }
+
+    public function contentTypePostman(): string
+    {
+        return [
+            "form-data" => "formdata",
+            "x-www-form-urlencoded" => "urlencoded",
+            "json" => "raw"
+        ][$this->contentType()];
     }
 
     public function baseUrl(): string
@@ -49,9 +88,9 @@ class Helper implements HelperInterface
         return $this->config->get('export-postman.folders');
     }
 
-    public function formData(): array
+    public function paramsValue(): array
     {
-        return $this->config->get('export-postman.formdata');
+        return $this->config->get('export-postman.params_value');
     }
 
     public function disk(): string

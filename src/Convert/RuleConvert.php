@@ -30,9 +30,14 @@ class RuleConvert
      * @param string $fieldName
      * @return void
      */
-    public function setField(string $fieldName)
+    protected function setField(string $fieldName)
     {
         $this->fieldOriginal = $fieldName;
+        if ($this->helper->contentType() == "json") {
+            $this->field = str_replace("*", "0", $this->fieldOriginal);
+            return;
+        }
+
         $this->field = str_replace(
             [".*.", ".*"],
             ["[]", "[]"],
@@ -44,7 +49,7 @@ class RuleConvert
      * @param array|string $rules
      * @return void
      */
-    public function setRules($rules)
+    protected function setRules($rules)
     {
         if (is_string($rules)) {
             $rules = [$rules];
@@ -67,7 +72,9 @@ class RuleConvert
 
     protected function setValue()
     {
-        if (in_array('integer', $this->rules)) {
+        if (array_key_exists($this->fieldOriginal, $this->helper->paramsValue())) {
+          $this->value = $this->helper->paramsValue()[$this->fieldOriginal];
+        } elseif (in_array('integer', $this->rules)) {
             $this->value = 1;
         } elseif (in_array('string', $this->rules)) {
             $this->value = "string";
@@ -84,6 +91,10 @@ class RuleConvert
         }
     }
 
+    public function getField(): string
+    {
+        return $this->field;
+    }
 
     public static function parse($fieldName, $rules): self
     {
@@ -95,12 +106,11 @@ class RuleConvert
         return $new;
     }
 
-
     protected function convert()
     {
         $this->convert = [
             'key' => $this->field,
-            'value' => $this->helper->formData()[$this->fieldOriginal] ?? $this->value,
+            'value' => $this->helper->paramsValue()[$this->fieldOriginal] ?? $this->value,
             'type' => 'text',
         ];
         $this->convertDescription();
@@ -114,8 +124,15 @@ class RuleConvert
         $this->convert['description'] = implode(', ', $this->rules);
     }
 
-    public function toArray()
+    public function toContent()
     {
-        return $this->convert;
+        if ($this->helper->contentType() == "json") {
+            return $this->value;
+        }
+        return [
+            'key' => $this->field,
+            'value' => $this->value,
+            'type' => 'text',
+        ];
     }
 }

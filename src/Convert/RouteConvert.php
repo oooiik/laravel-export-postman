@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
 use Oooiik\LaravelExportPostman\Helper\HelperInterface;
+use Oooiik\LaravelExportPostman\Utils\ObjUtil;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
@@ -111,12 +112,17 @@ class RouteConvert
         $rules = method_exists($rulesParameter, 'rules') ? $rulesParameter->rules() : [];
         $requestRules = [];
         foreach ($rules as $fieldName => $rule) {
-            $requestRules[] = RuleConvert::parse($fieldName, $rule)->toArray();
+            $ruleConvert = RuleConvert::parse($fieldName, $rule);
+            ObjUtil::object_set($requestRules, $ruleConvert->getField(), $ruleConvert->toContent());
         }
         $this->requests[$method]['request']['body'] = [
-            'mode' => 'urlencoded',
-            'urlencoded' => $requestRules
+            'mode' => $this->helper->contentTypePostman(),
         ];
+        if (in_array($this->helper->contentType(), ["form-data", "x-www-form-urlencoded"])) {
+            $this->requests[$method]['request']['body'][$this->helper->contentTypePostman()] = array_values($requestRules);
+        } elseif ($this->helper->contentType() == "json") {
+            $this->requests[$method]['request']['body'][$this->helper->contentTypePostman()] = json_encode($requestRules);
+        }
     }
 
     /**
