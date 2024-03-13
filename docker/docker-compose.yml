@@ -1,0 +1,26 @@
+services:
+  php:
+    container_name: "${COMPOSE_PROJECT_NAME}-php"
+    image: oooiik/php:8.2-fpm-laravel
+#    environment:
+#      USER: ${USER}
+    volumes:
+      - ./../:/app
+      - ./php/php.ini:/usr/local/etc/php/php.ini
+      - ./php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    networks:
+      default:
+        ipv4_address: "${COMPOSE_PROJECT_NETWORK}.4"
+
+networks:
+  default:
+    name: "${COMPOSE_PROJECT_NAME}_default"
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "${COMPOSE_PROJECT_NETWORK}.0/24"
+          gateway: "${COMPOSE_PROJECT_NETWORK}.1"
