@@ -107,8 +107,8 @@ class RouteConvert
             $this->requests[$method]['request']['body'] = [];
             return;
         }
-
-        $rulesParameter = new ($reflectionRulesParameter->getType()->getName());
+        $reflectionClassName = $reflectionRulesParameter->getType()->getName();
+        $rulesParameter = new $reflectionClassName;
         $rules = method_exists($rulesParameter, 'rules') ? $rulesParameter->rules() : [];
         $requestRules = [];
         foreach ($rules as $fieldName => $rule) {
