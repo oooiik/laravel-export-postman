@@ -10,9 +10,24 @@ class Helper implements HelperInterface
 {
     /** @var Repository $config */
     protected $config;
+
+    protected $singletonResults = [];
     public function __construct()
     {
         $this->config = Container::getInstance()->make(Repository::class);
+    }
+
+    public function __call($name, $arguments)
+    {
+        if (empty($arguments)) {
+            if (array_key_exists($name, $this->singletonResults)) {
+                return $this->singletonResults[$name];
+            }
+            $this->singletonResults[$name] = $this->$name();
+            return $this->singletonResults[$name];
+        }
+
+        return  $this->$name(...$arguments);
     }
 
     public function collectionName(): string
