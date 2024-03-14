@@ -21,6 +21,9 @@ class RuleConvert
     /** @var mixed */
     protected $value;
 
+    /** @var string */
+    protected $description;
+
     protected function __construct()
     {
         $this->helper = Container::getInstance()->make(HelperInterface::class);
@@ -121,7 +124,7 @@ class RuleConvert
      */
     protected function convertDescription()
     {
-        $this->convert['description'] = implode(', ', $this->rules);
+        $this->description = implode(', ', $this->rules);
     }
 
     public function toContent()
@@ -133,6 +136,7 @@ class RuleConvert
             'key' => $this->field,
             'value' => $this->value,
             'type' => 'text',
+            'description' => $this->description,
         ];
     }
 }
