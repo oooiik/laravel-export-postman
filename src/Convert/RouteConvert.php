@@ -131,18 +131,31 @@ class RouteConvert
      */
     protected function reflectionMethod()
     {
+        if (!empty($this->route->getControllerClass())) {
+            $reflection = new ReflectionClass($this->route->getControllerClass());
+
+            if (!$reflection->hasMethod($this->route->getActionMethod())) {
+                return null;
+            }
+            return $reflection->getMethod($this->route->getActionMethod());
+        }
+
+
         if ($this->route->getAction('uses') instanceof Closure) {
             return new ReflectionFunction($this->route->getAction('uses'));
         }
 
-        $routeData = explode('@', $this->route->getAction('uses'));
-        $reflection = new ReflectionClass($routeData[0]);
-
-        if (!$reflection->hasMethod($routeData[1])) {
-            return null;
+        if (is_string($this->route->getAction('uses'))) {
+            $obj = unserialize($this->route->getAction('uses'));
+            if(!$obj instanceof Closure && method_exists($obj, "getClosure")){
+                $obj = $obj->getClosure();
+            }
+            if ($obj instanceof Closure) {
+                return new ReflectionFunction($obj);
+            }
         }
 
-        return $reflection->getMethod($routeData[1]);
+        return null;
     }
 
     /**
