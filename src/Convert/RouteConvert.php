@@ -7,6 +7,7 @@ use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
+use Illuminate\Routing\RouteAction;
 use Illuminate\Support\Str;
 use Oooiik\LaravelExportPostman\Helper\HelperInterface;
 use Oooiik\LaravelExportPostman\Utils\ObjUtil;
@@ -23,6 +24,15 @@ class RouteConvert
 
     /** @var Route */
     protected $route;
+
+    protected $action = [
+//        "middleware" => ["api"],
+//        "uses" => "App\Http\Controllers\Auth\AuthController@login",
+//        "controller" => "App\Http\Controllers\Auth\AuthController@login",
+//        "namespace" => null,
+//        "prefix" => "api",
+//        "where" => [],
+    ];
 
     protected $requests = [
 //       [
@@ -46,6 +56,7 @@ class RouteConvert
     {
         $this->helper = Container::getInstance()->make(HelperInterface::class);
         $this->route = $route;
+        $this->action = $route->action;
         $this->convert();
     }
 
@@ -131,8 +142,8 @@ class RouteConvert
      */
     protected function reflectionMethod()
     {
-        if (!empty($this->route->getControllerClass())) {
-            $reflection = new ReflectionClass($this->route->getControllerClass());
+        if (is_string($this->action['uses']) && !RouteAction::containsSerializedClosure($this->action)) {
+            $reflection = new ReflectionClass(Str::parseCallback($this->action['uses'])[0]);
 
             if (!$reflection->hasMethod($this->route->getActionMethod())) {
                 return null;
