@@ -7,9 +7,9 @@ use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
-use Illuminate\Routing\RouteAction;
 use Illuminate\Support\Str;
 use Oooiik\LaravelExportPostman\Helper\HelperInterface;
+use Oooiik\LaravelExportPostman\Helper\RouteHelper;
 use Oooiik\LaravelExportPostman\Utils\ObjUtil;
 use ReflectionClass;
 use ReflectionException;
@@ -83,12 +83,15 @@ class RouteConvert
                 'disableBodyPruning' => true
             ];
 
-            $uri = Str::of($this->route->uri())->replaceMatches('/{([[:alnum:]]+)([?}]+)/', ':$1');
-            $variables = $uri->matchAll('/(?<={)[[:alnum:]]+(?=})/m');
+            $uri = $this->route->uri();
+            $uriPregReplace = preg_replace('/{([[:alnum:]]+)([?}]+)/', ':$1', $uri, -1);
+            preg_match_all('/(?<={)[[:alnum:]]+(?=})/m', $uriPregReplace, $matches);
+            $variables = empty($matches[0]) ? collect() : collect($matches[1] ?? $matches[0]);
+
             $this->requests[$methodType]['request']['url'] = [
                 'raw' => "{{{$this->helper->baseUrlKey()}}}/" . $uri,
                 'host' => ["{{{$this->helper->baseUrlKey()}}}"],
-                'path' => $uri->explode('/')->filter(),
+                'path' => collect(explode('/', $uriPregReplace, PHP_INT_MAX))->filter(),
                 'variable' => $variables->transform(function ($variable) {
                     return ['key' => $variable, 'value' => ''];
                 })->all(),
@@ -142,7 +145,7 @@ class RouteConvert
      */
     protected function reflectionMethod()
     {
-        if (is_string($this->action['uses']) && !RouteAction::containsSerializedClosure($this->action)) {
+        if (is_string($this->action['uses']) && !RouteHelper::containsSerializedClosure($this->action)) {
             $reflection = new ReflectionClass(Str::parseCallback($this->action['uses'])[0]);
 
             if (!$reflection->hasMethod($this->route->getActionMethod())) {
