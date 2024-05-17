@@ -83,6 +83,7 @@ class RouteConvert
                 'disableBodyPruning' => true
             ];
 
+            // uri
             $uri = $this->route->uri();
             $uriPregReplace = preg_replace('/{([[:alnum:]]+)([?}]+)/', ':$1', $uri, -1);
             preg_match_all('/(?<={)[[:alnum:]]+(?=})/m', $uriPregReplace, $matches);
@@ -97,7 +98,44 @@ class RouteConvert
                 })->all(),
             ];
 
+            // rules
             $this->convertRules($methodType);
+
+            // docs
+            $docCom = new DocCommentConvert($this->reflectionMethod());
+
+            $Headers = [];
+            foreach ($this->requests[$methodType]['request']['header'] as $item) {
+                $Headers[$item['key']] = $item;
+            }
+            foreach ($docCom->getHeader() ?? [] as $item){
+                $Headers[$item['key']] = $item;
+            }
+            $this->requests[$methodType]['request']['header'] = array_values($Headers);
+
+            $dDescription = $docCom->getDescription();
+            if(!empty($dDescription)) {
+                $this->requests[$methodType]['request']['description'] = $dDescription;
+            }
+
+            if($docCom->hasAuth()) {
+                $this->requests[$methodType]['request']['auth'] = $docCom->getAuth();
+            }
+
+            if (!array_key_exists('event', $this->requests[$methodType])) {
+                $this->requests[$methodType]['event'] = [];
+            }
+
+            if ($docCom->hasPreRequestScript()) {
+                $this->requests[$methodType]['event'][] = $docCom->getPreRequestScript();
+            }
+
+            if ($docCom->hasTestScript()) {
+                $this->requests[$methodType]['event'][] = $docCom->getTestScript();
+            }
+
+
+
         }
     }
 
