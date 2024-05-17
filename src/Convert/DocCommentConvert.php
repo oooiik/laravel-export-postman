@@ -15,7 +15,7 @@ class DocCommentConvert
     protected $ref;
 
     protected $docs = [
-//        "AuthBearerToken" => "{{token}}"
+//        "AuthBearer" => "{{token}}"
     ];
 
     /**
@@ -26,7 +26,6 @@ class DocCommentConvert
         $this->helper = Container::getInstance()->make(HelperInterface::class);
         $this->ref = $ref;
         $this->docCommentToArray();
-//        dd($this->docs);
     }
 
     /**
