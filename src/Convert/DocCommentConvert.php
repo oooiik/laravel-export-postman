@@ -140,18 +140,34 @@ class DocCommentConvert
         $exec = [];
 
         if (array_key_exists('PreRequestScriptContext', $this->docs)) {
-            $exec = array_merge($exec, $this->docs['PreRequestScriptContext']);
+            if (is_array($this->docs['PreRequestScriptContext'])) {
+                $exec = array_merge($exec, $this->docs['PreRequestScriptContext']);
+            } else {
+                $exec[] = $this->docs['PreRequestScriptContext'];
+            }
         }
 
         if (array_key_exists('PreRequestScriptFileBasePath', $this->docs)) {
-            if (file_exists(base_path($this->docs['PreRequestScriptFileBasePath']))) {
-                $exec[] = file_get_contents(base_path($this->docs['PreRequestScriptFileBasePath']));
+            $paths = is_array($this->docs['PreRequestScriptFileBasePath'])
+                ? $this->docs['PreRequestScriptFileBasePath']
+                : [is_array($this->docs['PreRequestScriptFileBasePath'])];
+            foreach ($paths as $path) {
+                $path = base_path($path);
+                if (file_exists($path)) {
+                    $exec[] = file_get_contents($path);
+                }
             }
         }
 
         if (array_key_exists('PreRequestScriptFileResourcePath', $this->docs)) {
-            if (file_exists(base_path($this->docs['PreRequestScriptFileResourcePath']))) {
-                $exec[] = file_get_contents(resource_path($this->docs['PreRequestScriptFileResourcePath']));
+            $paths = is_array($this->docs['PreRequestScriptFileResourcePath'])
+                ? $this->docs['PreRequestScriptFileResourcePath']
+                : [$this->docs['PreRequestScriptFileResourcePath']];
+            foreach ($paths as $path) {
+                $path = resource_path($path);
+                if (file_exists($path)) {
+                    $exec[] = file_get_contents($path);
+                }
             }
         }
 
