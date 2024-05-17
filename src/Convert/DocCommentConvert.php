@@ -150,7 +150,7 @@ class DocCommentConvert
         if (array_key_exists('PreRequestScriptFileBasePath', $this->docs)) {
             $paths = is_array($this->docs['PreRequestScriptFileBasePath'])
                 ? $this->docs['PreRequestScriptFileBasePath']
-                : [is_array($this->docs['PreRequestScriptFileBasePath'])];
+                : [$this->docs['PreRequestScriptFileBasePath']];
             foreach ($paths as $path) {
                 $path = base_path($path);
                 if (file_exists($path)) {
@@ -212,7 +212,7 @@ class DocCommentConvert
         if (array_key_exists('TestScriptFileBasePath', $this->docs)) {
             $paths = is_array($this->docs['TestScriptFileBasePath'])
                 ? $this->docs['TestScriptFileBasePath']
-                : [is_array($this->docs['TestScriptFileBasePath'])];
+                : [$this->docs['TestScriptFileBasePath']];
             foreach ($paths as $path) {
                 $path = base_path($path);
                 if (file_exists($path)) {
@@ -224,9 +224,9 @@ class DocCommentConvert
         if (array_key_exists('TestScriptFileResourcePath', $this->docs)) {
             $paths = is_array($this->docs['TestScriptFileResourcePath'])
                 ? $this->docs['TestScriptFileResourcePath']
-                : [is_array($this->docs['TestScriptFileResourcePath'])];
+                : [$this->docs['TestScriptFileResourcePath']];
             foreach ($paths as $path) {
-                $path = base_path($path);
+                $path = resource_path($path);
                 if (file_exists($path)) {
                     $exec[] = file_get_contents($path);
                 }
@@ -253,25 +253,41 @@ class DocCommentConvert
 
         $text = "";
 
-        if (array_key_exists('TestScriptContext', $this->docs)) {
-            $text .= implode("\n", $this->docs['TestScriptContext']);
-        }
-
-        if (array_key_exists('TestScriptFileBasePath', $this->docs)) {
-            if (file_exists(base_path($this->docs['TestScriptFileBasePath']))) {
-                if ($text !== "") {
-                    $text .= "\n\n";
-                }
-                $text .= file_get_contents(base_path($this->docs['TestScriptFileBasePath']));
+        if (array_key_exists('DescriptionContext', $this->docs)) {
+            if (is_array($this->docs['DescriptionContext'])) {
+                $text .= implode("\n", $this->docs['DescriptionContext']);
+            } else {
+                $text .= $this->docs['DescriptionContext'];
             }
         }
 
-        if (array_key_exists('TestScriptFileResourcePath', $this->docs)) {
-            if (file_exists(base_path($this->docs['TestScriptFileResourcePath']))) {
-                if ($text !== "") {
-                    $text .= "\n\n";
+        if (array_key_exists('DescriptionBasePath', $this->docs)) {
+            $paths = is_array($this->docs['DescriptionBasePath'])
+                ? $this->docs['DescriptionBasePath']
+                : [$this->docs['DescriptionBasePath']];
+            foreach ($paths as $path) {
+                $path = base_path($path);
+                if (file_exists($path)) {
+                    if(!empty($text)) {
+                        $text .= "\n";
+                    }
+                    $text .= file_get_contents($path);
                 }
-                $text .= file_get_contents(resource_path($this->docs['TestScriptFileResourcePath']));
+            }
+        }
+
+        if (array_key_exists('DescriptionResourcePath', $this->docs)) {
+            $paths = is_array($this->docs['DescriptionResourcePath'])
+                ? $this->docs['DescriptionResourcePath']
+                : [$this->docs['DescriptionResourcePath']];
+            foreach ($paths as $path) {
+                $path = resource_path($path);
+                if (file_exists($path)) {
+                    if(!empty($text)) {
+                        $text .= "\n";
+                    }
+                    $text .= file_get_contents($path);
+                }
             }
         }
 
