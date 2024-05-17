@@ -202,18 +202,34 @@ class DocCommentConvert
         $exec = [];
 
         if (array_key_exists('TestScriptContext', $this->docs)) {
-            $exec = array_merge($exec, $this->docs['TestScriptContext']);
+            if (is_array($this->docs['TestScriptContext'])) {
+                $exec = array_merge($exec, $this->docs['TestScriptContext']);
+            } else {
+                $exec[] = $this->docs['TestScriptContext'];
+            }
         }
 
         if (array_key_exists('TestScriptFileBasePath', $this->docs)) {
-            if (file_exists(base_path($this->docs['TestScriptFileBasePath']))) {
-                $exec[] = file_get_contents(base_path($this->docs['TestScriptFileBasePath']));
+            $paths = is_array($this->docs['TestScriptFileBasePath'])
+                ? $this->docs['TestScriptFileBasePath']
+                : [is_array($this->docs['TestScriptFileBasePath'])];
+            foreach ($paths as $path) {
+                $path = base_path($path);
+                if (file_exists($path)) {
+                    $exec[] = file_get_contents($path);
+                }
             }
         }
 
         if (array_key_exists('TestScriptFileResourcePath', $this->docs)) {
-            if (file_exists(base_path($this->docs['TestScriptFileResourcePath']))) {
-                $exec[] = file_get_contents(resource_path($this->docs['TestScriptFileResourcePath']));
+            $paths = is_array($this->docs['TestScriptFileResourcePath'])
+                ? $this->docs['TestScriptFileResourcePath']
+                : [is_array($this->docs['TestScriptFileResourcePath'])];
+            foreach ($paths as $path) {
+                $path = base_path($path);
+                if (file_exists($path)) {
+                    $exec[] = file_get_contents($path);
+                }
             }
         }
 
