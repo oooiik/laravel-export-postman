@@ -26,6 +26,7 @@ class DocCommentConvert
         $this->helper = Container::getInstance()->make(HelperInterface::class);
         $this->ref = $ref;
         $this->docCommentToArray();
+//        dd($this->docs);
     }
 
     /**
@@ -38,14 +39,20 @@ class DocCommentConvert
         }
         $docComment = $this->ref->getDocComment();
 
-        preg_match_all('/@(\w+)(?:\s+([^\s*]+))?/', $docComment, $matches, PREG_SET_ORDER);
+        preg_match_all('/@(\w+)\s+([^\r\n]*)/', $docComment, $matches, PREG_SET_ORDER);
 
         $result = [];
         foreach ($matches as $match) {
-            if (isset($match[2])) {
-                $result[$match[1]] = $match[2];
+            $tag = $match[1];
+            $value = $match[2];
+
+            if (isset($result[$tag])) {
+                if (!is_array($result[$tag])) {
+                    $result[$tag] = [$result[$tag]];
+                }
+                $result[$tag][] = $value;
             } else {
-                $result[$match[1]] = null;
+                $result[$tag] = $value;
             }
         }
 
@@ -97,23 +104,20 @@ class DocCommentConvert
             return null;
         }
 
-        if (!is_array($this->docs['Header'])) {
-            return null;
-        }
+        $headers = is_array($this->docs['Header']) ? $this->docs['Header'] : [$this->docs['Header']];
 
         $res = [];
-        foreach ($this->docs['Header'] as $header) {
+        foreach ($headers as $header) {
             $exp = explode('=>', $header);
             if (count($exp) !== 2) {
                 continue;
             }
             $res[] = [
-                "key" => $exp[0],
-                "value" => $exp[1],
+                "key" => trim($exp[0]),
+                "value" => trim($exp[1]),
                 "type" => "text"
             ];
         }
-
         return $res;
     }
 
