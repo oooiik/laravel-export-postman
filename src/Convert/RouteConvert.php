@@ -101,6 +101,10 @@ class RouteConvert
             // rules
             $this->convertRules($methodType);
 
+            if (is_null($this->reflectionMethod())) {
+                continue;
+            }
+
             // docs
             $docCom = new DocCommentConvert($this->reflectionMethod());
 
