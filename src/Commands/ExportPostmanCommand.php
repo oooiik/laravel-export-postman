@@ -3,6 +3,7 @@
 namespace Oooiik\LaravelExportPostman\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
 use Oooiik\LaravelExportPostman\Helper\Helper;
 use Oooiik\LaravelExportPostman\Services\RouterService;
 use Oooiik\LaravelExportPostman\Structure\Structure;
@@ -33,5 +34,6 @@ class ExportPostmanCommand extends Command
         $routerService = new RouterService($structure);
         $routerService->routesToStructure();
         $structure->storeFile();
+        $this->info(Storage::disk($this->helper->disk())->path($this->helper->path()) . ' successful generated!');
     }
 }
