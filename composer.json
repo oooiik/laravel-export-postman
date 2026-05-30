@@ -5,9 +5,26 @@
     "authors": [
         {
             "name": "Obidjon Toshev",
-            "email": "info@oooiik.com"
+            "email": "me@oooiik.com",
+            "homepage": "https://oooiik.com",
+            "role": "Developer"
         }
     ],
+    "keywords": [
+        "laravel",
+        "postman",
+        "api",
+        "documentation",
+        "collection",
+        "export",
+        "openapi",
+        "developer-tools"
+    ],
+    "homepage": "https://github.com/oooiik/laravel-export-postman",
+    "support": {
+        "issues": "https://github.com/oooiik/laravel-export-postman/issues",
+        "source": "https://github.com/oooiik/laravel-export-postman"
+    },
     "minimum-stability": "stable",
     "license": "MIT",
     "require": {
