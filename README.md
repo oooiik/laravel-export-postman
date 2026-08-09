@@ -1,5 +1,12 @@
 # Laravel Export to Postman
 
+> [!WARNING]
+> **This repository is archived and is no longer maintained.**
+>
+> Development continues in **[oooiik/laravel-apiforge](https://github.com/oooiik/laravel-apiforge)** — a full rewrite that exports Laravel routes to **OpenAPI / Swagger** (primary) and Postman, with complete validation rules, response examples, and domain-based grouping.
+>
+> This package stays on Packagist so existing installations keep working, but it will not receive further updates or bug fixes. New projects should use `oooiik/laravel-apiforge`.
+
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/oooiik/laravel-export-postman.svg?style=flat-square)](https://packagist.org/packages/oooiik/laravel-export-postman)
 [![Total Downloads](https://img.shields.io/packagist/dt/oooiik/laravel-export-postman.svg?style=flat-square)](https://packagist.org/packages/oooiik/laravel-export-postman)
 [![PHP Version](https://img.shields.io/packagist/php-v/oooiik/laravel-export-postman.svg?style=flat-square)](https://packagist.org/packages/oooiik/laravel-export-postman)
@@ -174,9 +181,10 @@ public function store(StoreOrderRequest $request)
 
 ## Contributing
 
-Pull requests are welcome. For larger changes, please open an issue first to discuss the direction.
+This repository is archived — pull requests and issues here will not be reviewed.
 
-Feature ideas, bug reports, and questions → [GitHub Issues](https://github.com/oooiik/laravel-export-postman/issues).
+Please open your feature ideas, bug reports, and questions in the successor project:
+[oooiik/laravel-apiforge → Issues](https://github.com/oooiik/laravel-apiforge/issues).
 
 ## Credits
 
